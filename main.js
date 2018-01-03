@@ -1,5 +1,6 @@
 const electron = require('electron');
 const { app, BrowserWindow } = electron;
+const windowStateKeeper = require('electron-window-state');
 const path = require('path');
 const url = require('url');
 
@@ -12,12 +13,22 @@ require('electron-reload')(__dirname, {
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-function createWindow() {
-  // Install DevTron to the DevTools
-  require('devtron').install();
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on('ready', () => {
+  // Load previous state with fallback to defaults
+  let mainWindowState = windowStateKeeper({ defaultWidth: 1000, defaultHeight: 800 });
 
   // Create the browser window.
-  mainWindow = new BrowserWindow({ width: 1200, height: 800 });
+  mainWindow = new BrowserWindow({
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+    width: mainWindowState.width,
+    height: mainWindowState.height
+  });
+
+  mainWindowState.manage(mainWindow);
 
   // and load the index.html of the app.
   mainWindow.loadURL(
@@ -38,12 +49,7 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
-}
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function() {
