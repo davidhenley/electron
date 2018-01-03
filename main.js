@@ -1,16 +1,23 @@
 const electron = require('electron');
 const { app, BrowserWindow } = electron;
-const reload = require('electron-reload')(__dirname);
 const path = require('path');
 const url = require('url');
+
+// Use Electron Reload (Nodemon for Electron)
+require('electron-reload')(__dirname, {
+  electron: path.join(__dirname, 'node_modules', '.bin', 'electron')
+});
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
 function createWindow() {
+  // Install DevTron to the DevTools
+  require('devtron').install();
+
   // Create the browser window.
-  mainWindow = new BrowserWindow({ width: 800, height: 600 });
+  mainWindow = new BrowserWindow({ width: 1200, height: 800 });
 
   // and load the index.html of the app.
   mainWindow.loadURL(
